@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import connectDB from './configs/db.js';
 dotenv.config();
 
 
@@ -17,7 +19,11 @@ app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
 
-}))
+}));
+
+
+//Mount the database connection string
+await connectDB();
 
 //Testing Routes
 app.get('/', (req, res) => {

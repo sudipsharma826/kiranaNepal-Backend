@@ -27,7 +27,7 @@ app.use(cors({
 await connectDB();
 
 //Testing Routes
-app.get('/', (req, res) => {res.send('Server is Running');});
+app.get('/', (req, res) => {res.send('Server is Running')});
 
 //Importing the routes
 app.use('/api/user',userRouter);//e.g the endpoint for registration be : /api/user/register

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import connectDB from './configs/db.js';
 import userRouter from './routes/userRoutes.js';
+import sellerRouter from './routes/sellerRoutes.js';
 dotenv.config();
 
 
@@ -31,6 +32,8 @@ app.get('/', (req, res) => {res.send('Server is Running')});
 
 //Importing the routes
 app.use('/api/user',userRouter);//e.g the endpoint for registration be : /api/user/register
+app.use('/api/seller',sellerRouter);//e.g the endpoint for registration be : /api/seller/register
+
 
 //Start the server
 app.listen(PORT,()=>{

@@ -5,6 +5,7 @@ import cors from 'cors';
 import connectDB from './configs/db.js';
 import userRouter from './routes/userRoutes.js';
 import sellerRouter from './routes/sellerRoutes.js';
+import productRouter from './routes/productRoutes.js';
 dotenv.config();
 
 
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {res.send('Server is Running')});
 //Importing the routes
 app.use('/api/user',userRouter);//e.g the endpoint for registration be : /api/user/register
 app.use('/api/seller',sellerRouter);//e.g the endpoint for registration be : /api/seller/register
+app.use('/api/product',productRouter);//e.g the endpoint for registration be : /api/product/register
 
 
 //Start the server

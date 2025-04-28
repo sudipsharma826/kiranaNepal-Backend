@@ -100,3 +100,17 @@ export const userLogin=async(req,res)=>{
         sendResponse(res,500,false,"Internal server error",error.message);
     }
 }
+
+//Logout controller
+export const userLogout=async(req,res)=>{
+    try{
+        res.clearCookie("accessToken",{
+            httpOnly:true,
+            secure:process.env.NODE_ENV==="production",
+            sameSite:process.env.NODE_ENV==="production"?"none":"strict",
+        });
+        sendResponse(res,200,true,"User logged out successfully");
+    }catch(error){
+        sendResponse(res,500,false,"Internal server error",error.message);
+    }
+}

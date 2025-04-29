@@ -12,7 +12,7 @@ const authSeller = (req, res, next) => {
             sendResponse(res, 401, false, "Unauthorized", "Invalid token");
             return;
         }
-        req.body.sellerEmail = decoded.email;
+        req.sellerEmail = decoded.email;
         next();
 
     }catch(error){

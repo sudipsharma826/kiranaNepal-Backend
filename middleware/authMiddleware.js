@@ -12,7 +12,7 @@ const authUser = (req, res, next) => {
             sendResponse(res, 401, false, "Unauthorized", "Invalid token");
             return;
         }else{
-        req.body.userId = decoded.id;//Track the user by its id as id is the unique identifier for the user
+        req.userId = decoded.id;//Track the user by its id as id is the unique identifier for the user
         }
         next();
 

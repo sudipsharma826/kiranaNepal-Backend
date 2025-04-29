@@ -18,7 +18,8 @@ const productSchema = mongoose.Schema({
     },
     price: {
         type: Number,
-        required: true
+        required: true,
+        set: value => Number(value.toFixed(2)), 
     },
     rating: {
         type: Number,

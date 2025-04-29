@@ -1,5 +1,5 @@
 import express from 'express';
-import { upload } from '../middleware/multer.js';
+import { upload } from '../configs/multer.js';
 import { addProduct, deleteProduct, getAllProducts, getSingleProduct, updateProduct } from '../controllers/productController.js';
 import authSeller from '../middleware/sellerMiddleware.js';
 

@@ -6,6 +6,9 @@ import connectDB from './configs/db.js';
 import userRouter from './routes/userRoutes.js';
 import sellerRouter from './routes/sellerRoutes.js';
 import productRouter from './routes/productRoutes.js';
+import cartRouter from './routes/cartRoutes.js';
+import addressRouter from './routes/addressRoutes.js';
+import orderRouter from './routes/orderRoutes.js';
 dotenv.config();
 
 
@@ -33,9 +36,11 @@ app.get('/', (req, res) => {res.send('Server is Running')});
 
 //Importing the routes
 app.use('/api/user',userRouter);//e.g the endpoint for registration be : /api/user/register
-app.use('/api/seller',sellerRouter);//e.g the endpoint for registration be : /api/seller/register
-app.use('/api/product',productRouter);//e.g the endpoint for registration be : /api/product/register
-
+app.use('/api/seller',sellerRouter);
+app.use('/api/product',productRouter);
+app.use('/api/cart',cartRouter);
+app.use('/api/address',addressRouter);
+app.use('/api/order',orderRouter);
 
 //Start the server
 app.listen(PORT,()=>{

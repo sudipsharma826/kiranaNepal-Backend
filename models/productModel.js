@@ -17,16 +17,17 @@ const productSchema = mongoose.Schema({
         required: true
     },
     price: {
-        type: Number,
+        type: String,
         required: true,
-        set: value => Number(value.toFixed(2)), 
+        set: value => Number(value).toFixed(2)  
     },
+    
     rating: {
         type: Number,
         default: 0
     },
     reviews: {
-        type: Number,
+        type: String,
         default: 0
     },
     image: {

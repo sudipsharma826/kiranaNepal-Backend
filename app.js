@@ -9,6 +9,7 @@ import productRouter from './routes/productRoutes.js';
 import cartRouter from './routes/cartRoutes.js';
 import addressRouter from './routes/addressRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
+import categoryRouter from './routes/categoryRoutes.js';
 dotenv.config();
 
 
@@ -41,6 +42,7 @@ app.use('/api/product',productRouter);
 app.use('/api/cart',cartRouter);
 app.use('/api/address',addressRouter);
 app.use('/api/order',orderRouter);
+app.use('/api/category',categoryRouter);
 
 //Start the server
 app.listen(PORT,()=>{

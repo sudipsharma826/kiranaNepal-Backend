@@ -23,7 +23,7 @@ export const sellerLogin = (req, res) => {
                 sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             });
-            sendResponse(res, 200, true, "Seller logged in successfully", email);
+            sendResponse(res, 200, true, "Logged in successfully", email);
         } else {
             sendResponse(res, 401, false, "Invalid email or password");
         }
@@ -46,3 +46,5 @@ export const sellerLogout = (req, res) => {
         sendResponse(res, 500, false, "Internal server error", error.message);
     }
 };
+
+

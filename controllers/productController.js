@@ -9,6 +9,8 @@ const normalizeTags = (tags) =>
 
 export const addProduct = async (req, res) => {
     try {
+        console.log("Request Body:", req.body);
+        console.log("Request File:", req.file);
         if (!req.body || !req.file) {
             return sendResponse(res, 400, false, "Form-data is incomplete or missing");
         }
@@ -66,7 +68,7 @@ export const addProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
     try {
-        const productsList = await products.find({});
+        const productsList = await products.find({}).sort({ updatedAt: -1 });
         sendResponse(res, 200, true, "Products fetched successfully", productsList);
     } catch (error) {
         console.error('Error:', error);
@@ -74,19 +76,19 @@ export const getAllProducts = async (req, res) => {
     }
 };
 
-export const getSingleProduct = async (req, res) => {
-    try {
-        const { slug } = req.params;
-        const product = await products.findOne({ slug });
-        if (!product) {
-            return sendResponse(res, 404, false, "Product not found");
-        }
-        sendResponse(res, 200, true, "Product fetched successfully", product);
-    } catch (error) {
-        console.error('Error:', error);
-        sendResponse(res, 500, false, "Internal server error", error.message);
-    }
-};
+// export const getSingleProduct = async (req, res) => {
+//     try {
+//         const { slug } = req.params;
+//         const product = await products.findById({ slug });
+//         if (!product) {
+//             return sendResponse(res, 404, false, "Product not found");
+//         }
+//         sendResponse(res, 200, true, "Product fetched successfully", product);
+//     } catch (error) {
+//         console.error('Error:', error);
+//         sendResponse(res, 500, false, "Internal server error", error.message);
+//     }
+// };
 
 export const updateProduct = async (req, res) => {
     try {

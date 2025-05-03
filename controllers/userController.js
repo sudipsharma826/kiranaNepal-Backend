@@ -167,3 +167,23 @@ export const googleLogin=async(req,res)=>{
         sendResponse(res,500,false,"Internal server error",error.message);
     }
 }
+
+//Controller to check if the user is logged in or not
+export const isAuth=async(req,res)=>{
+    try{
+        const userId=req.userId;
+        if(!userId){
+            sendResponse(res,401,false,"Unauthorized","No token provided");
+            return;
+        }
+        const userExists=await user.findById(userId).select("-password");
+        if(!userExists){
+            sendResponse(res,401,false,"Unauthorized","User does not exist");
+            return;
+        }
+        console.log("User exists:",userExists);
+        sendResponse(res,200,true,"User is logged in",userExists);
+    }catch(error){
+        sendResponse(res,500,false,"Internal server error",error.message);
+    }
+}

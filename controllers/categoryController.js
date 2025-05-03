@@ -74,7 +74,7 @@ export const getAllCategories = async (req, res) => {
 //Get all category for public
 export const getAllCategoriesForPublic = async (req, res) => {
   try {
-    const categories = await Category.find({},"name description totalproducts image icon").sort({ createdAt: -1 });
+    const categories = await Category.find({},"name description totalproducts image icon slug").sort({ createdAt: -1 });
     if (!categories) {
       return sendResponse(res, 404, false, "No categories found");
     }
@@ -147,4 +147,34 @@ export const updateCategory = async (req, res) => {
     return sendResponse(res, 500, false, "Internal server error", error.message);
   }
 };
+
+
+// Delete category
+export const deleteCategory = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // Find the category by slug (you probably need to use findOne({ slug }))
+    const category = await Category.findOne({ slug });
+    if (!category) {
+      return sendResponse(res, 404, false, "Category not found");
+    }
+
+    // Check if the category has products
+    if (category.totalproducts > 0) {
+      return sendResponse(res, 400, false, "Category has products. Cannot delete category.");
+    }
+
+    // Delete the category by its _id (since slug is usually not the _id)
+    const deletedCategory = await Category.findByIdAndDelete(category._id);
+    if (!deletedCategory) {
+      return sendResponse(res, 404, false, "Category not found or already deleted");
+    }
+
+    return sendResponse(res, 200, true, "Category deleted successfully", deletedCategory);
+  } catch (error) {
+    return sendResponse(res, 500, false, "Internal server error", error.message);
+  }
+};
+
 

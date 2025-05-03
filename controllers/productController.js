@@ -47,7 +47,7 @@ export const addProduct = async (req, res) => {
             { name: category },
             {
                 $push: { products: newProduct._id },
-                $inc: { totalProducts: 1 }
+                $inc: { totalproducts: 1 }
             },
             { new: true }
         );
@@ -140,7 +140,7 @@ export const updateProduct = async (req, res) => {
                 { name: existingProduct.category },
                 {
                     $pull: { products: existingProduct._id },
-                    $inc: { totalProducts: -1 }
+                    $inc: { totalproducts: -1 }
                 }
             );
 
@@ -148,7 +148,7 @@ export const updateProduct = async (req, res) => {
                 { name: category },
                 {
                     $addToSet: { products: updatedProduct._id },
-                    $inc: { totalProducts: 1 }
+                    $inc: { totalproducts: 1 }
                 },
                 { new: true }
             );
@@ -183,7 +183,7 @@ export const deleteProduct = async (req, res) => {
             { name: deletedProduct.category },
             {
                 $pull: { products: deletedProduct._id },
-                $inc: { totalProducts: -1 }
+                $inc: { totalproducts: -1 }
             }
         );
 

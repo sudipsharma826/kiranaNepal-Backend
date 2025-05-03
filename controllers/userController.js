@@ -29,6 +29,7 @@ export const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
+            isGoogleUser: false, 
         }); 
 
         // Generate the token
@@ -110,6 +111,58 @@ export const userLogout=async(req,res)=>{
             sameSite:process.env.NODE_ENV==="production"?"none":"strict",
         });
         sendResponse(res,200,true,"User logged out successfully");
+    }catch(error){
+        sendResponse(res,500,false,"Internal server error",error.message);
+    }
+}
+
+
+//Google login controller
+export const googleLogin=async(req,res)=>{
+    try{
+        const {email,name,image,phone}=req.body;
+        //Check if the user already exists
+        const userExists=await user.findOne({email});
+        if(userExists){
+            //Generate the token
+            const token=jwt.sign({id:userExists._id},process.env.JWT_SECRET,{
+                expiresIn:process.env.JWT_EXPIRES_IN,
+            });
+            //Send the token in the response with a cookie
+            res.cookie("accessToken",token,{
+                httpOnly:true,
+                secure:process.env.NODE_ENV==="production",
+                sameSite:process.env.NODE_ENV==="production"?"none":"strict",
+                maxAge:7*24*60*60*1000,
+            });
+            //Remove the password from the user object before sending the response
+            const {password:removedPassword,...userData}=userExists.toObject(); 
+            sendResponse(res,200,true,"User logged in successfully",userData);
+        }
+        else{
+            //Register the user
+            const newUser=await user.create({
+                name,
+                email,
+                image,
+                isGoogleUser:true, 
+                phone,
+            });
+            //Generate the token
+            const token=jwt.sign({id:newUser._id},process.env.JWT_SECRET,{
+                expiresIn:process.env.JWT_EXPIRES_IN,
+            });
+            //Send the token in the response with a cookie
+            res.cookie("accessToken",token,{
+                httpOnly:true,
+                secure:process.env.NODE_ENV==="production",
+                sameSite:process.env.NODE_ENV==="production"?"none":"strict",
+                maxAge:7*24*60*60*1000,
+            });
+            //Remove the password from the newUser object before sending the response
+            const {password:removedPassword,...userData}=newUser.toObject(); 
+            sendResponse(res,201,true,"User registered successfully",userData);
+        }
     }catch(error){
         sendResponse(res,500,false,"Internal server error",error.message);
     }

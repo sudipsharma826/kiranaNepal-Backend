@@ -36,7 +36,7 @@ export const getAddress = async (req, res) => {
     try {
         const { userId } = req;
         const userAddress = await Address.find({ userId });
-        sendResponse(res, 200, true, "Address fetched successfully", userAddress.map(addr => addr.fullAddress)); // Fixed to return all addresses
+        sendResponse(res, 200, true, "Address fetched successfully", userAddress);
     } catch (error) {
         sendResponse(res, 500, false, "Internal server error", error.message);
     }

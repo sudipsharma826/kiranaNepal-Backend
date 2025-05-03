@@ -40,7 +40,7 @@ export const placeOrderCOD = async (req, res) => {
     productId:id,
       name,
       quantity,
-      price,
+      price:Number(price),
       image,
       amount
     }));

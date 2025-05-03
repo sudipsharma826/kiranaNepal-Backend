@@ -1,11 +1,11 @@
 import express from 'express';
 import  {googleLogin, isAuth, registerUser, userLogin, userLogout } from '../controllers/userController.js';
 import authUser from '../middleware/authMiddleware.js';
-
+import { upload } from '../configs/multer.js';
 const userRouter = express.Router();
 
 //Define the routes for user-related operations
-userRouter.post('/register',registerUser);
+userRouter.post('/register',upload.single('image'),registerUser);
 userRouter.post('/login',userLogin);
 userRouter.get('/isAuth',authUser,isAuth);
 userRouter.get('/logout',authUser,userLogout);

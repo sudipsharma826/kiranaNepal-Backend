@@ -2,14 +2,18 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"; 
 import { sendResponse } from "../utils/response.js";
 import user from "../models/userModel.js";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 export const registerUser = async (req, res) => {
     try {
         // Get the data from the body
-        const { name, email, password } = req.body;
+        const { name, email, password ,phone} = req.body;
+        const userImage = req.file;
+
+        console.log(req.body, userImage);
 
         // Check if all fields are filled or not
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !userImage || !phone) {
             sendResponse(res, 400, false, "Please fill all the fields");
             return;
         }
@@ -23,13 +27,23 @@ export const registerUser = async (req, res) => {
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
+         
 
+        //Get the image URL from Cloudinary
+        const imageURL = await uploadToCloudinary(userImage);
+        if (!imageURL) {
+            sendResponse(res, 500, false, "Image upload failed");
+            return;
+        }
         // Register the user
         const newUser = await user.create({
             name,
             email,
             password: hashedPassword,
             isGoogleUser: false, 
+            phone,
+            image: imageURL.secure_url, 
+
         }); 
 
         // Generate the token

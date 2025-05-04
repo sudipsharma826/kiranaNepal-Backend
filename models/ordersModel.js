@@ -30,7 +30,7 @@ const orderSchema = new mongoose.Schema({
     },
     date: { type: String, required: true },
     total: { type: Number, required: true ,set: value => Number(value.toFixed(2))},
-    addressId: { type: String }, 
+    address: { type: String }, 
     paymentMethod: { type: String,
         enum: ['COD', 'Khalti'],
         default: 'COD', 

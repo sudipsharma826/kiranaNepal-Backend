@@ -1,7 +1,8 @@
 import user from "../models/userModel.js";
 import { sendResponse } from "../utils/response.js";
 export const update_cart = async (req, res) => {
-    const {userId,cartItems} = req.body;
+    const {cartItems} = req.body;
+    const userId = req.userId;
     if (!userId || !cartItems) {
         sendResponse(res, 400, false, "Please fill all the fields");
         return;

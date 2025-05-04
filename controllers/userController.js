@@ -190,13 +190,62 @@ export const isAuth=async(req,res)=>{
             sendResponse(res,401,false,"Unauthorized","No token provided");
             return;
         }
-        const userExists=await user.findById(userId).select("-password");
+        const userExists=await user.findById(userId);
         if(!userExists){
             sendResponse(res,401,false,"Unauthorized","User does not exist");
             return;
         }
-        console.log("User exists:",userExists);
-        sendResponse(res,200,true,"User is logged in",userExists);
+       
+        //Remove the password from the user object before sending the response
+        const {password:removedPassword,isGoogleUser,
+            ...userData}=userExists.toObject();
+        
+        sendResponse(res,200,true,"User is logged in",userData);
+    }catch(error){
+        sendResponse(res,500,false,"Internal server error",error.message);
+    }
+}
+
+//Update the user profile
+export const updateUserProfile=async(req,res)=>{
+    try{
+        const userId=req.userId;
+        const {name,email,phone,address}=req.body;
+        const userImage=req.file;
+        //Check if all fields are filled or not
+        if(!name || !email || !phone || !address){
+            sendResponse(res,400,false,"Please fill all the fields");
+            return;
+        }
+        //Check if the user exists or not
+        const userExists=await user.findById(userId);
+        if(!userExists){
+            sendResponse(res,400,false,"User does not exist");
+            return;
+        }
+        //Get the image URL from Cloudinary
+        let imageURL=userExists.image; 
+        if(userImage){
+            imageURL=await uploadToCloudinary(userImage);
+            if(!imageURL){
+                sendResponse(res,500,false,"Image upload failed");
+                return;
+            }
+            imageURL=imageURL.secure_url; 
+        }
+        
+        //Update the user profile
+        const updatedUser=await user.findByIdAndUpdate(userId,{
+            name,
+            email,
+            phone,
+            image:imageURL,
+            address,
+
+        });
+
+         sendResponse(res,200,true,"User profile updated successfully",null);
+
     }catch(error){
         sendResponse(res,500,false,"Internal server error",error.message);
     }

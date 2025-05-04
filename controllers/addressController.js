@@ -11,6 +11,13 @@ export const addAddress = async (req, res) => {
             sendResponse(res, 400, false, "Please fill all the fields");
             return;
         }
+
+        //Check if user already has an address
+        const existingAddress = await Address.findOne({ userId });  
+        if (existingAddress) {
+            sendResponse(res, 400, false, "User already has an address. Please update it instead of adding a new one.");
+            return;
+        }
         const fullAddress = `${address}, ${city}, ${state}, ${country}, ${pincode}`;
         await Address.create({
             userId,
@@ -35,6 +42,7 @@ export const addAddress = async (req, res) => {
 export const getAddress = async (req, res) => {
     try {
         const { userId } = req;
+        console.log(userId);
         const userAddress = await Address.find({ userId });
         sendResponse(res, 200, true, "Address fetched successfully", userAddress);
     } catch (error) {

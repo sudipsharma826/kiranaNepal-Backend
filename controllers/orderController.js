@@ -5,10 +5,10 @@ import { sendResponse } from "../utils/response.js";
 //place order using COD
 export const placeOrderCOD = async (req, res) => {
   try {
-    const { items, addressId } = req.body;
+    const { items, address } = req.body;
     const userId = req.userId;
 
-    if (!userId || !items || items.length === 0 || !addressId) {
+    if (!userId || !items || items.length === 0 || !address) {
       return sendResponse(res, 400, false, "Please fill all the required fields");
     }
     console.log("Items:", items);
@@ -49,7 +49,7 @@ export const placeOrderCOD = async (req, res) => {
       userId,
       date: new Date().toISOString(),
       total,
-      addressId,
+      address,
       paymentMethod: "COD",
       status: "pending",
       items: formattedItems,

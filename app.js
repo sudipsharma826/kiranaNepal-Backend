@@ -10,6 +10,7 @@ import cartRouter from './routes/cartRoutes.js';
 import addressRouter from './routes/addressRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import categoryRouter from './routes/categoryRoutes.js';
+import subscriberRouter from './routes/subscriberRoutes.js';
 dotenv.config();
 
 
@@ -43,6 +44,7 @@ app.use('/api/cart',cartRouter);
 app.use('/api/address',addressRouter);
 app.use('/api/order',orderRouter);
 app.use('/api/category',categoryRouter);
+app.use('/api/subscriber',subscriberRouter);
 
 //Start the server
 app.listen(PORT,()=>{

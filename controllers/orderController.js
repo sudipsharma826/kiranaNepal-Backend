@@ -191,7 +191,7 @@ export const khaltiPayment = async (req, res) => {
       product_details: enrichedItems.map((item) => ({
         identity: item.id,
         name: item.name,
-        total_price: item.total * 100,
+        total_price: item.total,
         quantity: item.quantity,
         unit_price: item.price * 100,
       })),

@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema({
     
     orderId:{
         type: String,
-        default: () => "KN" + Math.floor(Math.random() * 1000000),
+        required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema({
     deliveryDate: { type: String },
     trackingNumber: {
          type: String ,
-         default: () => "KN-T" + Math.floor(Math.random() * 1000001),},
+         },
     items: [itemSchema],
     timeline: [timelineSchema]
   }, { timestamps: true });

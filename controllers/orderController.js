@@ -47,7 +47,8 @@ export const placeOrderCOD = async (req, res) => {
     }));
 
     const newOrder = await order.create({
-      userId,
+      orderId : `KN${Math.floor(Math.random() * 1000000)}`,
+      trackingNumber : `KN-T${Math.floor(Math.random() * 1000001)}`,userId,
       date: new Date().toISOString(),
       total,
       address,
@@ -113,15 +114,14 @@ export const updateOrderStatus = async (req, res) => {
 // Handle Online Payment
 export const khaltiPayment = async (req, res) => {
   try {
-    const { items, address, name, email, phone, tax, shippingFee } = req.body;
+    const { items, address, name, email, phone, shippingFee } = req.body;
     const userId = req.userId;
     const return_url = process.env.KHALTI_RETURN_URL;
     const website_url = process.env.KHALTI_WEBSITE_URL;
 
     // Basic validation
     if (!userId || !items || !address) {
-      sendResponse(res, 400, false, "Please fill all the required fields");
-      return;
+      return sendResponse(res, 400, false, "Please fill all the required fields");
     }
 
     // Get product details and enrich items
@@ -139,50 +139,26 @@ export const khaltiPayment = async (req, res) => {
         price,
         quantity,
         total,
-        image: product.image, 
+        image: product.image,
       };
     }));
 
     const markPrice = enrichedItems.reduce((acc, i) => acc + i.total, 0);
     const vat = Math.round(markPrice * 0.13);
-    const total = (markPrice + vat) * 100; // convert to paisa
+    const total = Number((markPrice + vat).toFixed(2)); // Store in rupees for DB
 
-    // Save order in DB
-    const newOrder = await order.create({
-      userId,
-      address,
-      status: "pending",
-      paymentMethod: "Khalti",
-      items: enrichedItems.map(item => ({
-        productId: item.id,
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        amount: item.total,
-        image: item.image,
-      })),
-      total,
-      date: new Date().toISOString(),
-      timeline: [{ status: "pending", date: new Date().toISOString() }],
-    });
+    // Generate orderId and trackingNumber manually
+    const orderId = `KN${Math.floor(Math.random() * 1000000)}`;
+    const trackingNumber = `KN-T${Math.floor(Math.random() * 1000001)}`;
 
-    if (!newOrder) {
-      sendResponse(res, 500, false, "Failed to save order in DB");
-      return;
-    }
-
-    // Prepare Khalti payload
+    // Prepare Khalti payload (convert to paisa here only)
     const khaltiPayload = {
       return_url,
       website_url,
-      amount: total,
-      purchase_order_id: newOrder.orderId,
-      purchase_order_name: newOrder.trackingNumber,
-      customer_info: {
-        name,
-        email,
-        phone
-      },
+      amount: total * 100, // convert to paisa
+      purchase_order_id: orderId,
+      purchase_order_name: trackingNumber,
+      customer_info: { name, email, phone },
       amount_breakdown: [
         { label: "Mark Price", amount: markPrice * 100 },
         { label: "Tax", amount: vat * 100 },
@@ -191,15 +167,13 @@ export const khaltiPayment = async (req, res) => {
       product_details: enrichedItems.map((item) => ({
         identity: item.id,
         name: item.name,
-        total_price: item.total,
+        total_price: item.total * 100, // convert to paisa
         quantity: item.quantity,
-        unit_price: item.price * 100,
+        unit_price: item.price * 100, // convert to paisa
       })),
       merchant_username: process.env.KHALTI_MERCHANT_USERNAME,
       merchant_extra: process.env.KHALTI_MERCHANT_EXTRA,
     };
-
-    console.log("Khalti Payload:", khaltiPayload);
 
     // Call Khalti API
     const khaltiResponse = await axios.post(
@@ -212,17 +186,40 @@ export const khaltiPayment = async (req, res) => {
       }
     );
 
-    res.status(200).json({
+    // Save order in DB (amounts in rupees)
+    const newOrder = await order.create({
+      userId,
+      orderId,
+      trackingNumber,
+      address,
+      status: "pending",
+      paymentMethod: "Khalti",
+      items: enrichedItems.map(item => ({
+        productId: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        amount: item.total,
+        image: item.image,
+      })),
+      total, // still in rupees
+      date: new Date().toISOString(),
+      timeline: [{ status: "pending", date: new Date().toISOString() }],
+    });
+
+    return res.status(200).json({
       success: true,
       message: "Redirect to Khalti",
       data: khaltiResponse.data,
     });
 
   } catch (err) {
-    console.error("Khalti payment error:", err);
-    res.status(500).json({ success: false, message: err.message });
+    console.error("Khalti payment error:", err.message || err);
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
 
 
 // Payment Verification
